@@ -3,8 +3,10 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame_tut/main.dart';
 import 'package:flame/sprite.dart';
+import 'package:flame_tut/worm.dart';
 
-class Dino extends SpriteAnimationComponent with HasGameRef<DinoGame> {
+class Dino extends SpriteAnimationComponent
+    with CollisionCallbacks, HasGameRef<DinoGame> {
   Vector2 velocity = Vector2(0, -500);
   Vector2 gravity = Vector2(0, 550);
   bool hasJumped = false;
@@ -13,12 +15,15 @@ class Dino extends SpriteAnimationComponent with HasGameRef<DinoGame> {
   late final SpriteAnimation standingAnimation;
   late final SpriteAnimation jumpingAnimation;
 
-  Dino() : super(size: Vector2.all(100.0));
+  Dino() : super(size: Vector2.all(100.0)) {
+    debugMode = true;
+  }
 
   @override
   Future<void> onLoad() async {
     super.onLoad();
     await loadAnimations();
+    add(RectangleHitbox());
     animation = standingAnimation;
     position.x = 0;
   }
@@ -55,6 +60,16 @@ class Dino extends SpriteAnimationComponent with HasGameRef<DinoGame> {
     animation = runRightAnimation;
     if (x <= (gameRef.size[0] / 2) - width) {
       x += 100 * dt;
+    }
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    // TODO: implement onCollision
+    super.onCollision(intersectionPoints, other);
+
+    if (other is Worm) {
+      print("colliding with worm");
     }
   }
 

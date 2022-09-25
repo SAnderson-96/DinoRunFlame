@@ -4,17 +4,21 @@ import 'package:flame/game.dart';
 import 'package:flame_tut/main.dart';
 import 'package:flame/sprite.dart';
 
-class Worm extends SpriteAnimationComponent with HasGameRef<DinoGame> {
+class Worm extends SpriteAnimationComponent
+    with CollisionCallbacks, HasGameRef<DinoGame> {
   late final SpriteAnimation idleAnimation;
   final double animationSpeed = 0.15;
-
-  Worm() : super(size: Vector2.all(90 * 1.75));
+  final double sizeScale = 0.8;
+  Worm() : super(size: Vector2.all(90 * 1.75)) {
+    debugMode = true;
+  }
 
   @override
   Future<void> onLoad() async {
     super.onLoad();
     await loadAnimations();
     flipHorizontally();
+    add(RectangleHitbox());
     animation = idleAnimation;
     position.y = gameRef.size[1] - size.y + 40;
     position.x = gameRef.size[0];

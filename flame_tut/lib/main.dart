@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/experimental.dart';
@@ -16,7 +17,7 @@ void main() {
   runApp(GameWidget(game: DinoGame()));
 }
 
-class DinoGame extends FlameGame with TapDetector {
+class DinoGame extends FlameGame with TapDetector, HasCollisionDetection {
   final Dino dino = Dino();
   final ParallaxBackground parallaxComponent = ParallaxBackground();
   late Timer wormIntervalTimer;
