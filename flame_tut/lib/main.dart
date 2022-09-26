@@ -4,13 +4,16 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
+import 'package:flame/palette.dart';
 import 'package:flame/parallax.dart';
+import 'package:flame/text.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_tut/parallax.dart';
 import 'package:flutter/material.dart';
 import 'package:flame_tut/dino.dart';
 import 'package:flame_tut/worm.dart';
 import 'package:flame/timer.dart';
+import 'dart:ui' hide TextStyle;
 
 ///Parallax background credits
 ///https://jesse-m.itch.io/jungle-pack
@@ -22,14 +25,25 @@ class DinoGame extends FlameGame with TapDetector, HasCollisionDetection {
   final Dino dino = Dino();
   final ParallaxBackground parallaxComponent = ParallaxBackground();
   late Timer wormIntervalTimer;
+  final TextPaint textPaint = TextPaint(
+    style: TextStyle(
+      fontSize: 48.0,
+      fontFamily: 'Awesome Font',
+      backgroundColor: Color.fromARGB(92, 0, 0, 0),
+    ),
+  );
+  int wormsJumpedOver = 0;
+  String scoreText = '';
 
   Vector2 gravity = Vector2(0, 800);
 
   @override
   Future<void> onLoad() async {
     super.onLoad();
+    children.register<Worm>();
     print('loading game assets');
     add(parallaxComponent);
+    scoreText = 'You\'ve Jumped over ${wormsJumpedOver} Worms!';
 
     //set a timer so that worms can only spawn at a maximum of 1 second of interval
     wormIntervalTimer = Timer(1.5, repeat: false, autoStart: false);
@@ -61,6 +75,20 @@ class DinoGame extends FlameGame with TapDetector, HasCollisionDetection {
       add(newWorm);
       wormIntervalTimer.start();
     }
+    scoreText = 'You\'ve Jumped over ${wormsJumpedOver} Worms!';
+    print(children.length);
+    final allWorms = children.query<Worm>();
+    allWorms.forEach((worm) {
+      if (worm.x + worm.width < 0) remove(worm);
+    });
+  }
+
+  @override
+  void render(canvas) {
+    super.render(canvas);
+
+    textPaint.render(canvas, scoreText, Vector2(size[0] / 2, 50),
+        anchor: Anchor.center);
   }
 
   @override
