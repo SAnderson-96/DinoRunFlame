@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -10,9 +9,11 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_tut/parallax.dart';
 import 'package:flutter/material.dart';
 import 'package:flame_tut/dino.dart';
-import 'worm.dart';
+import 'package:flame_tut/worm.dart';
 import 'package:flame/timer.dart';
 
+///Parallax background credits
+///https://jesse-m.itch.io/jungle-pack
 void main() {
   runApp(GameWidget(game: DinoGame()));
 }
@@ -31,7 +32,7 @@ class DinoGame extends FlameGame with TapDetector, HasCollisionDetection {
     add(parallaxComponent);
 
     //set a timer so that worms can only spawn at a maximum of 1 second of interval
-    wormIntervalTimer = Timer(1, repeat: false, autoStart: false);
+    wormIntervalTimer = Timer(1.5, repeat: false, autoStart: false);
 
     final screenWidth = size[0];
     //size is built in to Flame and gives you the dimensions of the screen
@@ -67,7 +68,7 @@ class DinoGame extends FlameGame with TapDetector, HasCollisionDetection {
     // print("Player tap down on ${event.eventPosition.game}");
     if (!dino.hasJumped) {
       //Not working in android for some reason
-      FlameAudio.play('jump.mp3', volume: 1);
+      // FlameAudio.play('jump.mp3', volume: 1);
     }
 
     //jump

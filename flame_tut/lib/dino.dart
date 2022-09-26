@@ -5,11 +5,14 @@ import 'package:flame_tut/main.dart';
 import 'package:flame/sprite.dart';
 import 'package:flame_tut/worm.dart';
 
+///Dino assets
+///https://arks.itch.io/dino-characters
 class Dino extends SpriteAnimationComponent
     with CollisionCallbacks, HasGameRef<DinoGame> {
-  Vector2 velocity = Vector2(0, -500);
+  Vector2 velocity = Vector2(0, -600);
   Vector2 gravity = Vector2(0, 550);
   bool hasJumped = false;
+  final double sizeScale = 0.7;
   final double animationSpeed = 0.2;
   late final SpriteAnimation runRightAnimation;
   late final SpriteAnimation standingAnimation;
@@ -23,7 +26,10 @@ class Dino extends SpriteAnimationComponent
   Future<void> onLoad() async {
     super.onLoad();
     await loadAnimations();
-    add(RectangleHitbox());
+    add(RectangleHitbox(
+        size: Vector2.all(this.size[0] * sizeScale),
+        anchor: Anchor.topLeft,
+        position: Vector2(this.size[0] / 8, this.size[1] / 6)));
     animation = standingAnimation;
     position.x = 0;
   }
@@ -59,7 +65,7 @@ class Dino extends SpriteAnimationComponent
   void moveRight(dt) {
     animation = runRightAnimation;
     if (x <= (gameRef.size[0] / 2) - width) {
-      x += 100 * dt;
+      x += 150 * dt;
     }
   }
 
@@ -95,6 +101,6 @@ class Dino extends SpriteAnimationComponent
 
   void resetVelocity() {
     print('velocity reset');
-    velocity = Vector2(0, -500);
+    velocity = Vector2(0, -600);
   }
 }

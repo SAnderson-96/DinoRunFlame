@@ -4,13 +4,16 @@ import 'package:flame/game.dart';
 import 'package:flame_tut/main.dart';
 import 'package:flame/sprite.dart';
 
+///Worm From
+///https://luizmelo.itch.io/fire-worm
 class Worm extends SpriteAnimationComponent
     with CollisionCallbacks, HasGameRef<DinoGame> {
   late final SpriteAnimation idleAnimation;
-  final double animationSpeed = 0.15;
-  final double sizeScale = 0.8;
-  Worm() : super(size: Vector2.all(90 * 1.75)) {
+  final double animationSpeed = 0.1;
+  final double sizeScale = 0.6;
+  Worm() : super(size: Vector2.all(90 * 1.25)) {
     debugMode = true;
+    anchor = Anchor.topRight;
   }
 
   @override
@@ -18,9 +21,13 @@ class Worm extends SpriteAnimationComponent
     super.onLoad();
     await loadAnimations();
     flipHorizontally();
-    add(RectangleHitbox());
+    add(RectangleHitbox(
+        size: Vector2.all(this.size[0] * sizeScale),
+        anchor: Anchor.topLeft,
+        position: Vector2(this.size[0] / 6, this.size[1] / 6)));
+
     animation = idleAnimation;
-    position.y = gameRef.size[1] - size.y + 40;
+    position.y = gameRef.size[1] - gameRef.dino.size.y;
     position.x = gameRef.size[0];
   }
 
