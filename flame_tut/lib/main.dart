@@ -25,6 +25,7 @@ class DinoGame extends FlameGame with TapDetector, HasCollisionDetection {
   final Dino dino = Dino();
   final ParallaxBackground parallaxComponent = ParallaxBackground();
   late Timer wormIntervalTimer;
+  late FpsTextComponent fpsComponent;
   final TextPaint textPaint = TextPaint(
     style: TextStyle(
       fontSize: 48.0,
@@ -41,6 +42,8 @@ class DinoGame extends FlameGame with TapDetector, HasCollisionDetection {
   Future<void> onLoad() async {
     super.onLoad();
     children.register<Worm>();
+    fpsComponent = FpsTextComponent();
+    add(fpsComponent);
     print('loading game assets');
     add(parallaxComponent);
     scoreText = 'You\'ve Jumped over ${wormsJumpedOver} Worms!';
@@ -89,6 +92,8 @@ class DinoGame extends FlameGame with TapDetector, HasCollisionDetection {
 
     textPaint.render(canvas, scoreText, Vector2(size[0] / 2, 50),
         anchor: Anchor.center);
+
+    fpsComponent.render(canvas);
   }
 
   @override
