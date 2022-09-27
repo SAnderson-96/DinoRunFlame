@@ -1,6 +1,7 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
+import 'package:flame_tut/dino.dart';
 import 'package:flame_tut/main.dart';
 import 'package:flame/sprite.dart';
 
@@ -11,6 +12,8 @@ class Worm extends SpriteAnimationComponent
   late final SpriteAnimation idleAnimation;
   final double animationSpeed = 0.1;
   final double sizeScale = 0.6;
+  final double speed = 200;
+  bool hasBeenHit = false;
   bool hasBeenAddedToCount = false;
   Worm() : super(size: Vector2.all(90 * 1.25)) {
     debugMode = true;
@@ -43,11 +46,23 @@ class Worm extends SpriteAnimationComponent
   }
 
   @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    // TODO: implement onCollision
+    super.onCollision(intersectionPoints, other);
+
+    if (other is Dino) {
+      hasBeenHit = true;
+    }
+  }
+
+  @override
   void update(double dt) {
     super.update(dt);
-    x -= 200 * dt;
+    x -= speed * dt;
 
-    if (x < gameRef.dino.x && !hasBeenAddedToCount) {
+    if (x < gameRef.dino.x - gameRef.dino.width &&
+        !hasBeenAddedToCount &&
+        !hasBeenHit) {
       hasBeenAddedToCount = true;
       gameRef.wormsJumpedOver++;
     }

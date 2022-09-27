@@ -20,7 +20,10 @@ class Dino extends SpriteAnimationComponent
   late final SpriteAnimation runRightAnimation;
   late final SpriteAnimation standingAnimation;
   late final SpriteAnimation jumpingAnimation;
+  late final SpriteAnimation hurtAnimation;
+  late Timer hurtAnimationTimer;
   bool pressedJump = false;
+  int lives = 3;
 
   Dino() : super(size: Vector2.all(100.0)) {
     debugMode = true;
@@ -30,6 +33,7 @@ class Dino extends SpriteAnimationComponent
   Future<void> onLoad() async {
     super.onLoad();
     await loadAnimations();
+    hurtAnimationTimer = Timer(1.5, repeat: false, autoStart: false);
     add(RectangleHitbox(
         size: Vector2.all(this.size[0] * sizeScale),
         anchor: Anchor.topLeft,
@@ -61,16 +65,24 @@ class Dino extends SpriteAnimationComponent
     //standing animation
     standingAnimation = spriteSheet.createAnimation(
         row: 0, stepTime: animationSpeed, from: 0, to: 3);
+    hurtAnimation = spriteSheet.createAnimation(
+        row: 0, stepTime: animationSpeed, from: 14, to: 16);
   }
 
   @override
   void update(dt) {
     super.update(dt);
 
+    hurtAnimationTimer.update(dt);
+
     if (hasJumped || pressedJump) {
       jump(dt);
     } else {
-      moveRight(dt);
+      if (!hurtAnimationTimer.isRunning()) {
+        moveRight(dt);
+      } else {
+        animation = hurtAnimation;
+      }
     }
   }
 
@@ -83,16 +95,31 @@ class Dino extends SpriteAnimationComponent
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    // TODO: implement onCollision
     super.onCollision(intersectionPoints, other);
 
     if (other is Worm) {
-      print("colliding with worm");
+      if (!hurtAnimationTimer.isRunning()) {
+        hurtAnimationTimer.start();
+        animation = hurtAnimation;
+        lives--;
+        if (lives == 0) {
+          print('Game Over💀');
+          gameRef.overlays.add('EndGame');
+          gameRef.pauseEngine();
+        }
+        print("colliding with worm");
+      } else {
+        print('colliding but not being hurt');
+      }
     }
   }
 
   void jump(dt) {
-    animation = jumpingAnimation;
+    if (!hurtAnimationTimer.isRunning()) {
+      //dont change the animation unless the hurtAnimation isnt being played
+      animation = jumpingAnimation;
+    }
+
     //every frame
     //position = position + dt * velocity
     //velocity = velocity + dt * gravity

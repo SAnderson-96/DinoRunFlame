@@ -24,10 +24,46 @@ void main() {
     game: game,
     overlayBuilderMap: {
       'PauseMenu': (BuildContext context, DinoGame game) {
-        return Text('A Pause Menu');
+        return buildPauseMenu(context, game);
+      },
+      '3Hearts': (BuildContext context, DinoGame game) {
+        return build3Hearts(context, game);
+      },
+      '2Hearts': (BuildContext context, DinoGame game) {
+        return build2Hearts();
+      },
+      '1Hearts': (BuildContext context, DinoGame game) {
+        return build1Hearts();
+      },
+      '0Hearts': (BuildContext context, DinoGame game) {
+        return build0Hearts();
+      },
+      'EndGame': (BuildContext context, DinoGame game) {
+        return buildEndGame(context, game);
       }
     },
   ));
+}
+
+Widget buildEndGame(BuildContext context, DinoGame game) {
+  return Center(
+      child: Container(
+          decoration: BoxDecoration(
+              color: Color.fromARGB(155, 0, 0, 0),
+              border: Border.all(color: Colors.white)),
+          child: Center(
+              child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                      borderRadius:
+                          BorderRadius.all(Radius.elliptical(10, 10))),
+                  child: Center(
+                      child: Text(
+                          'G A M E  O V E R\nYou Have Jumped over ${game.wormsJumpedOver} ${game.wormsJumpedOver != 1 ? "Worms" : "Worm\nYou are Trash"}.',
+                          style: TextStyle(
+                            fontSize: 90,
+                            fontFamily: 'Awesome Font',
+                          )))))));
 }
 
 class DinoGame extends FlameGame
@@ -57,6 +93,7 @@ class DinoGame extends FlameGame
     super.onLoad();
     children.register<Worm>();
     fpsComponent = FpsTextComponent();
+
     add(fpsComponent);
     print('loading game assets');
     add(parallaxComponent);
@@ -83,10 +120,12 @@ class DinoGame extends FlameGame
   @override
   void update(double dt) {
     //!important worm.update is implicitly called because it was added (by using Flame add() - in the if statement below)
+
     //Must update the timer for it to work
     wormIntervalTimer.update(dt);
     super.update(dt);
     dino.update(dt);
+    updateLives();
     if (Random().nextDouble() < 0.01 && !wormIntervalTimer.isRunning()) {
       Worm newWorm = Worm();
       add(newWorm);
@@ -143,4 +182,109 @@ class DinoGame extends FlameGame
     }
     return KeyEventResult.ignored;
   }
+
+  void updateLives() {
+    switch (dino.lives) {
+      case 3:
+        if (overlays.isActive('2Hearts')) {
+          overlays.remove('2Hearts');
+        }
+        if (!overlays.isActive('3Hearts')) {
+          overlays.add('3Hearts');
+        }
+        break;
+      case 2:
+        if (overlays.isActive('3Hearts')) {
+          overlays.remove('3Hearts');
+        }
+        if (overlays.isActive('1Hearts')) {
+          overlays.remove('1Hearts');
+        }
+        if (!overlays.isActive('2Hearts')) {
+          overlays.add('2Hearts');
+        }
+        break;
+      case 1:
+        if (overlays.isActive('2Hearts')) {
+          overlays.remove('2Hearts');
+        }
+        if (!overlays.isActive('1Hearts')) {
+          overlays.add('1Hearts');
+        }
+        break;
+      case 0:
+        if (overlays.isActive('1Hearts')) {
+          overlays.remove('1Hearts');
+        }
+        overlays.add('0Hearts');
+        break;
+    }
+  }
+}
+
+Widget buildPauseMenu(BuildContext context, DinoGame game) {
+  return Center(
+      child: Container(
+          decoration: BoxDecoration(
+              color: Color.fromARGB(90, 0, 0, 0),
+              border: Border.all(color: Colors.white)),
+          child: Center(
+              child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                      borderRadius:
+                          BorderRadius.all(Radius.elliptical(10, 10))),
+                  child: Text('⏸️ Paused ⏸️',
+                      style: TextStyle(
+                          fontSize: 48,
+                          fontFamily: 'Awesome Font',
+                          backgroundColor: Color.fromARGB(90, 0, 0, 0)))))));
+}
+
+Widget build0Hearts() {
+  return Positioned(
+    top: 50,
+    right: 0,
+    child: Row(children: [
+      Text('💀', style: TextStyle(fontSize: 90)),
+      Text('💀', style: TextStyle(fontSize: 90)),
+      Text('💀', style: TextStyle(fontSize: 90)),
+    ]),
+  );
+}
+
+Widget build1Hearts() {
+  return Positioned(
+    top: 50,
+    right: 0,
+    child: Row(children: [
+      Text('❤️', style: TextStyle(fontSize: 90)),
+      Text('💀', style: TextStyle(fontSize: 90)),
+      Text('💀', style: TextStyle(fontSize: 90)),
+    ]),
+  );
+}
+
+Widget build2Hearts() {
+  return Positioned(
+    top: 50,
+    right: 0,
+    child: Row(children: [
+      Text('❤️', style: TextStyle(fontSize: 90)),
+      Text('❤️', style: TextStyle(fontSize: 90)),
+      Text('💀', style: TextStyle(fontSize: 90)),
+    ]),
+  );
+}
+
+Widget build3Hearts(BuildContext context, DinoGame game) {
+  return Positioned(
+    top: 50,
+    right: 0,
+    child: Row(children: [
+      Text('❤️', style: TextStyle(fontSize: 90)),
+      Text('❤️', style: TextStyle(fontSize: 90)),
+      Text('❤️', style: TextStyle(fontSize: 90)),
+    ]),
+  );
 }
