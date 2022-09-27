@@ -11,6 +11,7 @@ class Worm extends SpriteAnimationComponent
   late final SpriteAnimation idleAnimation;
   final double animationSpeed = 0.1;
   final double sizeScale = 0.6;
+  bool hasBeenAddedToCount = false;
   Worm() : super(size: Vector2.all(90 * 1.25)) {
     debugMode = true;
     anchor = Anchor.topRight;
@@ -44,7 +45,11 @@ class Worm extends SpriteAnimationComponent
   @override
   void update(double dt) {
     super.update(dt);
-
     x -= 200 * dt;
+
+    if (x < gameRef.dino.x && !hasBeenAddedToCount) {
+      hasBeenAddedToCount = true;
+      gameRef.wormsJumpedOver++;
+    }
   }
 }
