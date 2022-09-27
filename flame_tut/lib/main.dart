@@ -45,27 +45,6 @@ void main() {
   ));
 }
 
-Widget buildEndGame(BuildContext context, DinoGame game) {
-  return Center(
-      child: Container(
-          decoration: BoxDecoration(
-              color: Color.fromARGB(155, 0, 0, 0),
-              border: Border.all(color: Colors.white)),
-          child: Center(
-              child: Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white),
-                      borderRadius:
-                          BorderRadius.all(Radius.elliptical(10, 10))),
-                  child: Center(
-                      child: Text(
-                          'G A M E  O V E R\nYou Have Jumped over ${game.wormsJumpedOver} ${game.wormsJumpedOver != 1 ? "Worms" : "Worm\nYou are Trash"}.',
-                          style: TextStyle(
-                            fontSize: 90,
-                            fontFamily: 'Awesome Font',
-                          )))))));
-}
-
 class DinoGame extends FlameGame
     with
         TapDetector,
@@ -85,6 +64,7 @@ class DinoGame extends FlameGame
   );
   int wormsJumpedOver = 0;
   String scoreText = '';
+  final hasReachedBreakPoint = [false, false, false];
 
   Vector2 gravity = Vector2(0, 800);
 
@@ -132,18 +112,34 @@ class DinoGame extends FlameGame
       wormIntervalTimer.start();
     }
     scoreText = 'You\'ve Jumped over ${wormsJumpedOver} Worms!';
-    print(children.length);
     final allWorms = children.query<Worm>();
     allWorms.forEach((worm) {
       if (worm.x + worm.width < 0) remove(worm);
     });
+
+    if (wormsJumpedOver == 10) {
+      if (!hasReachedBreakPoint[0] && !wormIntervalTimer.isRunning()) {
+        wormIntervalTimer = Timer(1.25, repeat: false, autoStart: false);
+        hasReachedBreakPoint[0] = true;
+      }
+    } else if (wormsJumpedOver == 20) {
+      if (!hasReachedBreakPoint[1] && !wormIntervalTimer.isRunning()) {
+        wormIntervalTimer = Timer(1.15, repeat: false, autoStart: false);
+        hasReachedBreakPoint[1] = true;
+      }
+    } else if (wormsJumpedOver == 30) {
+      if (!hasReachedBreakPoint[2] && !wormIntervalTimer.isRunning()) {
+        wormIntervalTimer = Timer(0.85, repeat: false, autoStart: false);
+        hasReachedBreakPoint[2] = true;
+      }
+    }
   }
 
   @override
   void render(canvas) {
     super.render(canvas);
 
-    textPaint.render(canvas, scoreText, Vector2(size[0] / 2, 50),
+    textPaint.render(canvas, scoreText, Vector2(size[0] / 2, size[1] / 10),
         anchor: Anchor.center);
 
     fpsComponent.render(canvas);
@@ -236,14 +232,14 @@ Widget buildPauseMenu(BuildContext context, DinoGame game) {
                           BorderRadius.all(Radius.elliptical(10, 10))),
                   child: Text('⏸️ Paused ⏸️',
                       style: TextStyle(
-                          fontSize: 48,
+                          fontSize: 75,
                           fontFamily: 'Awesome Font',
                           backgroundColor: Color.fromARGB(90, 0, 0, 0)))))));
 }
 
 Widget build0Hearts() {
   return Positioned(
-    top: 50,
+    top: 100,
     right: 0,
     child: Row(children: [
       Text('💀', style: TextStyle(fontSize: 90)),
@@ -255,7 +251,7 @@ Widget build0Hearts() {
 
 Widget build1Hearts() {
   return Positioned(
-    top: 50,
+    top: 100,
     right: 0,
     child: Row(children: [
       Text('❤️', style: TextStyle(fontSize: 90)),
@@ -267,7 +263,7 @@ Widget build1Hearts() {
 
 Widget build2Hearts() {
   return Positioned(
-    top: 50,
+    top: 100,
     right: 0,
     child: Row(children: [
       Text('❤️', style: TextStyle(fontSize: 90)),
@@ -279,7 +275,7 @@ Widget build2Hearts() {
 
 Widget build3Hearts(BuildContext context, DinoGame game) {
   return Positioned(
-    top: 50,
+    top: 100,
     right: 0,
     child: Row(children: [
       Text('❤️', style: TextStyle(fontSize: 90)),
@@ -287,4 +283,25 @@ Widget build3Hearts(BuildContext context, DinoGame game) {
       Text('❤️', style: TextStyle(fontSize: 90)),
     ]),
   );
+}
+
+Widget buildEndGame(BuildContext context, DinoGame game) {
+  return Center(
+      child: Container(
+          decoration: BoxDecoration(
+              color: Color.fromARGB(155, 0, 0, 0),
+              border: Border.all(color: Colors.white)),
+          child: Center(
+              child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                      borderRadius:
+                          BorderRadius.all(Radius.elliptical(10, 10))),
+                  child: Center(
+                      child: Text(
+                          'G A M E  O V E R\nYou Have Jumped over ${game.wormsJumpedOver} ${game.wormsJumpedOver != 1 ? "Worms" : "Worm\nYou are Trash"}.',
+                          style: TextStyle(
+                            fontSize: 90,
+                            fontFamily: 'Awesome Font',
+                          )))))));
 }

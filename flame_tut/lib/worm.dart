@@ -12,7 +12,7 @@ class Worm extends SpriteAnimationComponent
   late final SpriteAnimation idleAnimation;
   final double animationSpeed = 0.1;
   final double sizeScale = 0.6;
-  final double speed = 200;
+  double speed = 200;
   bool hasBeenHit = false;
   bool hasBeenAddedToCount = false;
   Worm() : super(size: Vector2.all(90 * 1.25)) {
@@ -25,6 +25,7 @@ class Worm extends SpriteAnimationComponent
     super.onLoad();
     await loadAnimations();
     flipHorizontally();
+    speed = speed + (gameRef.wormsJumpedOver * 10);
     add(RectangleHitbox(
         size: Vector2.all(this.size[0] * sizeScale),
         anchor: Anchor.topLeft,
@@ -65,6 +66,8 @@ class Worm extends SpriteAnimationComponent
         !hasBeenHit) {
       hasBeenAddedToCount = true;
       gameRef.wormsJumpedOver++;
+      speed = speed + 20;
+      print(speed);
     }
   }
 }
