@@ -40,14 +40,6 @@ class Dino extends SpriteAnimationComponent
         position: Vector2(this.size[0] / 8, this.size[1] / 6)));
     animation = standingAnimation;
     position.x = 0;
-
-    add(KeyboardListenerComponent(keyDown: {
-      LogicalKeyboardKey.space: (keysPressed) {
-        print("Space Pressed");
-        didPressedJump();
-        return true;
-      }
-    }));
   }
 
   Future<void> loadAnimations() async {
