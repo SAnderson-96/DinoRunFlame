@@ -1,14 +1,17 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame_tut/main.dart';
 import 'package:flame/sprite.dart';
 import 'package:flame_tut/worm.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
 ///Dino assets
 ///https://arks.itch.io/dino-characters
 class Dino extends SpriteAnimationComponent
-    with CollisionCallbacks, HasGameRef<DinoGame> {
+    with CollisionCallbacks, HasGameRef<DinoGame>, KeyboardHandler {
   Vector2 velocity = Vector2(0, -600);
   Vector2 gravity = Vector2(0, 550);
   bool hasJumped = false;
@@ -17,6 +20,7 @@ class Dino extends SpriteAnimationComponent
   late final SpriteAnimation runRightAnimation;
   late final SpriteAnimation standingAnimation;
   late final SpriteAnimation jumpingAnimation;
+  bool pressedJump = false;
 
   Dino() : super(size: Vector2.all(100.0)) {
     debugMode = true;
@@ -32,6 +36,14 @@ class Dino extends SpriteAnimationComponent
         position: Vector2(this.size[0] / 8, this.size[1] / 6)));
     animation = standingAnimation;
     position.x = 0;
+
+    add(KeyboardListenerComponent(keyDown: {
+      LogicalKeyboardKey.space: (keysPressed) {
+        print("Space Pressed");
+        didPressedJump();
+        return true;
+      }
+    }));
   }
 
   Future<void> loadAnimations() async {
@@ -55,7 +67,7 @@ class Dino extends SpriteAnimationComponent
   void update(dt) {
     super.update(dt);
 
-    if (hasJumped) {
+    if (hasJumped || pressedJump) {
       jump(dt);
     } else {
       moveRight(dt);
@@ -94,6 +106,7 @@ class Dino extends SpriteAnimationComponent
     if (y >= gameRef.size[1] - height) {
       y = gameRef.size[1] - height;
       hasJumped = false;
+      pressedJump = false;
       resetVelocity();
       return;
     }
@@ -102,5 +115,9 @@ class Dino extends SpriteAnimationComponent
   void resetVelocity() {
     print('velocity reset');
     velocity = Vector2(0, -600);
+  }
+
+  void didPressedJump() {
+    pressedJump = true;
   }
 }

@@ -11,14 +11,28 @@ import 'package:flutter/material.dart';
 import 'package:flame_tut/dino.dart';
 import 'package:flame_tut/worm.dart';
 import 'package:flame/timer.dart';
+import 'package:flutter/services.dart';
 
 ///Parallax background credits
 ///https://jesse-m.itch.io/jungle-pack
 void main() {
-  runApp(GameWidget(game: DinoGame()));
+  final game = DinoGame();
+  runApp(GameWidget(
+    game: game,
+    overlayBuilderMap: {
+      'PauseMenu': (BuildContext context, DinoGame game) {
+        return Text('A Pause Menu');
+      }
+    },
+  ));
 }
 
-class DinoGame extends FlameGame with TapDetector, HasCollisionDetection {
+class DinoGame extends FlameGame
+    with
+        TapDetector,
+        HasCollisionDetection,
+        KeyboardEvents,
+        HasKeyboardHandlerComponents {
   final Dino dino = Dino();
   final ParallaxBackground parallaxComponent = ParallaxBackground();
   late Timer wormIntervalTimer;
@@ -74,5 +88,26 @@ class DinoGame extends FlameGame with TapDetector, HasCollisionDetection {
     //jump
     dino.hasJumped = true;
     return true;
+  }
+
+  @override
+  KeyEventResult onKeyEvent(
+      RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    final isKeyDown = event is RawKeyDownEvent;
+
+    final isP = keysPressed.contains(LogicalKeyboardKey.keyP);
+
+    if (isP) {
+      if (overlays.isActive('PauseMenu')) {
+        overlays.remove('PauseMenu');
+        resumeEngine();
+        return KeyEventResult.handled;
+      } else {
+        overlays.add('PauseMenu');
+        pauseEngine();
+        return KeyEventResult.handled;
+      }
+    }
+    return KeyEventResult.ignored;
   }
 }
