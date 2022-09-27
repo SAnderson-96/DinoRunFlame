@@ -21,6 +21,7 @@ class Dino extends SpriteAnimationComponent
   late final SpriteAnimation standingAnimation;
   late final SpriteAnimation jumpingAnimation;
   late final SpriteAnimation hurtAnimation;
+  final double speed = 150;
   late Timer hurtAnimationTimer;
   bool pressedJump = false;
   int lives = 3;
@@ -35,9 +36,9 @@ class Dino extends SpriteAnimationComponent
     await loadAnimations();
     hurtAnimationTimer = Timer(1.5, repeat: false, autoStart: false);
     add(RectangleHitbox(
-        size: Vector2.all(this.size[0] * sizeScale),
+        size: Vector2.all(size[0] * sizeScale),
         anchor: Anchor.topLeft,
-        position: Vector2(this.size[0] / 8, this.size[1] / 6)));
+        position: Vector2(size[0] / 8, size[1] / 6)));
     animation = standingAnimation;
     position.x = 0;
   }
@@ -81,7 +82,7 @@ class Dino extends SpriteAnimationComponent
   void moveRight(dt) {
     animation = runRightAnimation;
     if (x <= (gameRef.size[0] / 2) - width) {
-      x += 150 * dt;
+      x += speed * dt;
     }
   }
 
