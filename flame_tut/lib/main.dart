@@ -8,6 +8,7 @@ import 'package:flame/palette.dart';
 import 'package:flame/parallax.dart';
 import 'package:flame/text.dart';
 import 'package:flame_audio/flame_audio.dart';
+import 'package:flame_tut/flyingeye.dart';
 import 'package:flame_tut/parallax.dart';
 import 'package:flutter/material.dart';
 import 'package:flame_tut/dino.dart';
@@ -95,6 +96,8 @@ class DinoGame extends FlameGame
     //always add Dino last because we want him with the highest z index (on top of everything else depth wise)
     add(dino); // add is from FlameGame
     //position of sprite on y axis -- 0,0 is still top left
+
+    add(FlyingEye());
   }
 
   @override

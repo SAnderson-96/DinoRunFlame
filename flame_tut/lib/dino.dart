@@ -22,7 +22,7 @@ class Dino extends SpriteAnimationComponent
   late final SpriteAnimation jumpingAnimation;
   late final SpriteAnimation hurtAnimation;
   final double speed = 150;
-  late Timer hurtAnimationTimer;
+  late Timer isInvulnerableTimer;
   bool pressedJump = false;
   int lives = 3;
 
@@ -34,10 +34,9 @@ class Dino extends SpriteAnimationComponent
   Future<void> onLoad() async {
     super.onLoad();
     await loadAnimations();
-    hurtAnimationTimer = Timer(1.5, repeat: false, autoStart: false);
+    isInvulnerableTimer = Timer(1.5, repeat: false, autoStart: false);
     add(RectangleHitbox(
         size: Vector2.all(size[0] * sizeScale),
-        anchor: Anchor.topLeft,
         position: Vector2(size[0] / 8, size[1] / 6)));
     animation = standingAnimation;
     position.x = 0;
@@ -66,12 +65,12 @@ class Dino extends SpriteAnimationComponent
   void update(dt) {
     super.update(dt);
 
-    hurtAnimationTimer.update(dt);
+    isInvulnerableTimer.update(dt);
 
     if (hasJumped || pressedJump) {
       jump(dt);
     } else {
-      if (!hurtAnimationTimer.isRunning()) {
+      if (!isInvulnerableTimer.isRunning()) {
         moveRight(dt);
       } else {
         animation = hurtAnimation;
@@ -91,8 +90,8 @@ class Dino extends SpriteAnimationComponent
     super.onCollision(intersectionPoints, other);
 
     if (other is Worm) {
-      if (!hurtAnimationTimer.isRunning()) {
-        hurtAnimationTimer.start();
+      if (!isInvulnerableTimer.isRunning()) {
+        isInvulnerableTimer.start();
         animation = hurtAnimation;
         lives--;
         if (lives == 0) {
@@ -108,7 +107,7 @@ class Dino extends SpriteAnimationComponent
   }
 
   void jump(dt) {
-    if (!hurtAnimationTimer.isRunning()) {
+    if (!isInvulnerableTimer.isRunning()) {
       //dont change the animation unless the hurtAnimation isnt being played
       animation = jumpingAnimation;
     }
