@@ -9,12 +9,14 @@ class ParallaxBackground extends ParallaxComponent<DinoGame> {
   @override
   Future<void> onLoad() async {
     parallax = await gameRef.loadParallax([
+      ParallaxImageData('parallax/planetSingle.png'),
       ParallaxImageData('parallax/plx2.png'),
       ParallaxImageData('parallax/plx3.png'),
       ParallaxImageData('parallax/plx4.png'),
       ParallaxImageData('parallax/plx5.png'),
     ],
         baseVelocity: Vector2(20, 0),
-        velocityMultiplierDelta: Vector2(1.8, 1.0));
+        velocityMultiplierDelta: Vector2(1.8, 1.0),
+        fill: LayerFill.width);
   }
 }

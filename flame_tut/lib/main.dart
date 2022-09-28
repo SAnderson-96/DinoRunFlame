@@ -55,6 +55,7 @@ class DinoGame extends FlameGame
   final Dino dino = Dino();
   final ParallaxBackground parallaxComponent = ParallaxBackground();
   late Timer wormIntervalTimer;
+  late Timer flyingEyeIntervalTimer;
   late FpsTextComponent fpsComponent;
   final TextPaint textPaint = TextPaint(
     style: TextStyle(
@@ -73,6 +74,7 @@ class DinoGame extends FlameGame
   Future<void> onLoad() async {
     super.onLoad();
     children.register<Worm>();
+    children.register<FlyingEye>();
     fpsComponent = FpsTextComponent();
 
     add(fpsComponent);
@@ -82,6 +84,7 @@ class DinoGame extends FlameGame
 
     //set a timer so that worms can only spawn at a maximum of 1 second of interval
     wormIntervalTimer = Timer(1.5, repeat: false, autoStart: false);
+    flyingEyeIntervalTimer = Timer(1.5, repeat: false, autoStart: false);
 
     final screenWidth = size[0];
     //size is built in to Flame and gives you the dimensions of the screen
@@ -96,8 +99,6 @@ class DinoGame extends FlameGame
     //always add Dino last because we want him with the highest z index (on top of everything else depth wise)
     add(dino); // add is from FlameGame
     //position of sprite on y axis -- 0,0 is still top left
-
-    add(FlyingEye());
   }
 
   @override
@@ -106,6 +107,7 @@ class DinoGame extends FlameGame
 
     //Must update the timer for it to work
     wormIntervalTimer.update(dt);
+    flyingEyeIntervalTimer.update(dt);
     super.update(dt);
     dino.update(dt);
     updateLives();
@@ -114,10 +116,21 @@ class DinoGame extends FlameGame
       add(newWorm);
       wormIntervalTimer.start();
     }
+    if (Random().nextDouble() < 0.001 && !flyingEyeIntervalTimer.isRunning()) {
+      FlyingEye eye = FlyingEye();
+      add(eye);
+      flyingEyeIntervalTimer.start();
+    }
+
     scoreText = 'You\'ve Jumped over ${wormsJumpedOver} Worms!';
     final allWorms = children.query<Worm>();
     allWorms.forEach((worm) {
       if (worm.x + worm.width < 0) remove(worm);
+    });
+
+    final allFlyingEyes = children.query<FlyingEye>();
+    allFlyingEyes.forEach((flyingEye) {
+      if (flyingEye.x + flyingEye.width < 0) remove(flyingEye);
     });
 
     if (wormsJumpedOver == 10) {
@@ -154,10 +167,13 @@ class DinoGame extends FlameGame
     if (!dino.hasJumped) {
       //Not working in android for some reason
       // FlameAudio.play('jump.mp3', volume: 1);
+      dino.hasJumped = true;
+    } else if (dino.hasJumped) {
+      dino.isForcedDown = true;
     }
 
     //jump
-    dino.hasJumped = true;
+
     return true;
   }
 

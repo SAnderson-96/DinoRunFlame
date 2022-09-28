@@ -15,6 +15,7 @@ class Dino extends SpriteAnimationComponent
   Vector2 velocity = Vector2(0, -600);
   Vector2 gravity = Vector2(0, 550);
   bool hasJumped = false;
+  bool isForcedDown = false;
   final double sizeScale = 0.7;
   final double animationSpeed = 0.2;
   late final SpriteAnimation runRightAnimation;
@@ -67,8 +68,19 @@ class Dino extends SpriteAnimationComponent
 
     isInvulnerableTimer.update(dt);
 
-    if (hasJumped || pressedJump) {
+    if ((hasJumped || pressedJump) && !isForcedDown) {
       jump(dt);
+    } else if (hasJumped && isForcedDown) {
+      if (y >= gameRef.size[1] - height) {
+        y = gameRef.size[1] - height;
+        hasJumped = false;
+        pressedJump = false;
+        isForcedDown = false;
+        resetVelocity();
+      } else {
+        velocity.y = 600;
+        y += velocity.y * dt;
+      }
     } else {
       if (!isInvulnerableTimer.isRunning()) {
         moveRight(dt);
